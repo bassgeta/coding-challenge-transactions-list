@@ -36,7 +36,7 @@ const Navigation: React.FC = () => {
 
   return (
     <header className="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-ful text-sm py-4 bg-gray-800">
-      <nav className="max-w-[85rem] w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between">
+      <nav className="max-w-[85rem] w-full mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
         <div className="flex items-center justify-between">
           <a
             className="flex-none text-xl font-semibold dark:text-white"
@@ -45,7 +45,7 @@ const Navigation: React.FC = () => {
             Transactions List
           </a>
         </div>
-        <div className="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow sm:block">
+        <div className="overflow-hidden transition-all duration-300 basis-full grow sm:block">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-end sm:mt-0 sm:pl-5">
             {wallet && (
               <>
