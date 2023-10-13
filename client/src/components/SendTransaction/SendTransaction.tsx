@@ -7,6 +7,7 @@ import {
   sendTransactionAction,
 } from '../../store/actions';
 import { sendTransactionSelector } from '../../store/selectors';
+import { navigate } from '../NaiveRouter';
 
 interface SendTransactionFormData {
   sender: string;
@@ -48,6 +49,7 @@ const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
       // @ts-ignore
       HSOverlay.close(modalRef.current);
       onClose();
+      navigate(`/transaction/${transactionId}`);
     }
   }, [transactionId, onClose]);
 
