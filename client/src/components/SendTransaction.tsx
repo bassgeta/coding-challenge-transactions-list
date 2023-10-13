@@ -5,9 +5,9 @@ import { Account } from '@web3-onboard/core/dist/types';
 import {
   clearSendTransactionStateAction,
   sendTransactionAction,
-} from '../../store/actions';
-import { sendTransactionSelector } from '../../store/selectors';
-import { navigate } from '../NaiveRouter';
+} from '../store/actions';
+import { sendTransactionSelector } from '../store/selectors';
+import { navigate } from './NaiveRouter';
 
 interface SendTransactionFormData {
   sender: string;
