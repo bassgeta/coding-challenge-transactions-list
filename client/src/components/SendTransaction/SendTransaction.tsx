@@ -20,7 +20,7 @@ interface SendTransactionProps {
 }
 
 const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
-  const modalRef = useRef(null);
+  const modalRef = useRef<HTMLDivElement | null>(null);
   const dispatch = useDispatch();
   const {
     handleSubmit,
@@ -46,8 +46,9 @@ const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
 
   useEffect(() => {
     if (transactionId !== null) {
-      // @ts-ignore
-      HSOverlay.close(modalRef.current);
+      if (modalRef.current) {
+        window.HSOverlay.close(modalRef.current);
+      }
       onClose();
       navigate(`/transaction/${transactionId}`);
     }
