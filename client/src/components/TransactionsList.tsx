@@ -7,7 +7,8 @@ import { navigate } from './NaiveRouter';
 const TransactionList: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  const { loading, error, data } = useQuery<TransactionsData>(GetAllTransactions);
+  const { loading, error, data } =
+    useQuery<TransactionsData>(GetAllTransactions);
 
   useEffect(() => {
     if (data && data.getAllTransactions) {
@@ -44,8 +45,14 @@ const TransactionList: React.FC = () => {
           {!!transactions.length ? (
             <>
               {transactions.map(({ hash, to, from, value }) => (
-                <div key={hash} className="bg-white shadow-sm p-4 md:p-5 border rounded border-gray-300 mt-3 hover:border-blue-500 cursor-pointer" onClick={() => handleNavigate(hash)}>
-                  <span className="font-bold">{value} ETH</span> sent from <span className="font-bold">{from}</span> to <span className="font-bold">{to}</span>
+                <div
+                  key={hash}
+                  className="bg-white shadow-sm p-4 md:p-5 border rounded border-gray-300 mt-3 hover:border-blue-500 cursor-pointer"
+                  onClick={() => handleNavigate(hash)}
+                >
+                  <span className="font-bold">{value} ETH</span> sent from{' '}
+                  <span className="font-bold">{from}</span> to{' '}
+                  <span className="font-bold">{to}</span>
                 </div>
               ))}
             </>
@@ -56,6 +63,6 @@ const TransactionList: React.FC = () => {
       </div>
     </div>
   );
-}
+};
 
 export default TransactionList;

@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import Onboard, { WalletState } from '@web3-onboard/core';
 import injectedModule from '@web3-onboard/injected-wallets';
 
-import SendTransaction from './SendTransaction';
+import SendTransaction from './SendTransaction/SendTransaction';
 
 const injected = injectedModule();
 
@@ -33,6 +33,7 @@ const Navigation: React.FC = () => {
       setWallet(metamaskWallet);
     }
   }, []);
+  console.log('dwalet', wallet);
 
   return (
     <header className="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-ful text-sm py-4 bg-gray-800">
@@ -49,7 +50,7 @@ const Navigation: React.FC = () => {
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-end sm:mt-0 sm:pl-5">
             {wallet && (
               <>
-                <SendTransaction />
+                <SendTransaction senderAccount={wallet.accounts[0]} />
                 <p className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border-2 border-gray-200 font-semibold text-gray-200 text-sm">
                   {wallet.accounts[0].address}
                 </p>
