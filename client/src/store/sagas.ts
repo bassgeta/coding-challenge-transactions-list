@@ -8,7 +8,6 @@ import {
 } from 'ethers';
 
 import apolloClient from '../apollo/client';
-import { Transaction as TransactionAPI } from '../types';
 import { GetAllTransactions, SaveTransaction } from '../queries';
 import { ActionType, SendTransactionAction } from './interfaces';
 import { convertETHToWei } from '../utils/currency';
@@ -18,6 +17,7 @@ import {
   sendTransactionSuccessAction,
 } from './actions';
 import { FetchResult } from '@apollo/client';
+import { SaveTransactionMutation } from '../gql/graphql';
 
 function* sendTransaction({ payload }: SendTransactionAction) {
   yield put(sendTransactionLoadingAction(true));
@@ -58,23 +58,20 @@ function* sendTransaction({ payload }: SendTransactionAction) {
       },
     };
 
-    const transactionResponse: FetchResult<TransactionAPI> =
+    const transactionResponse: FetchResult<SaveTransactionMutation> =
       yield apolloClient.mutate({
         mutation: SaveTransaction,
         variables,
         refetchQueries: [{ query: GetAllTransactions }],
       });
-    console.log('ma kaj bomo doili a', transactionResponse);
 
-    /*
     if (transactionResponse.data) {
       yield put(
         sendTransactionSuccessAction({
-          transactionId: transactionResponse.data.hash,
+          transactionId: transactionResponse.data.addTransaction.hash,
         }),
       );
     }
-    */
   } catch (error) {
     console.error('Error while creating transaction', error);
     // It would be nicer to check the error type, but for the moment let's store a generic error message

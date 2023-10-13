@@ -45,7 +45,6 @@ const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
 
   useEffect(() => {
     if (transactionId !== null) {
-      console.log('wooo', transactionId);
       // @ts-ignore
       HSOverlay.close(modalRef.current);
       onClose();
