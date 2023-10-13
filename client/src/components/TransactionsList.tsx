@@ -3,6 +3,7 @@ import { useQuery } from '@apollo/client';
 import { GetAllTransactions } from '../queries';
 import { Transaction, TransactionsData } from '../types';
 import { navigate } from './NaiveRouter';
+import { convertWeiToETH } from '../utils/currency';
 
 const TransactionList: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -50,8 +51,10 @@ const TransactionList: React.FC = () => {
                   className="bg-white shadow-sm p-4 md:p-5 border rounded border-gray-300 mt-3 hover:border-blue-500 cursor-pointer"
                   onClick={() => handleNavigate(hash)}
                 >
-                  <span className="font-bold">{value} ETH</span> sent from{' '}
-                  <span className="font-bold">{from}</span> to{' '}
+                  <span className="font-bold">
+                    {convertWeiToETH(value)} ETH
+                  </span>{' '}
+                  sent from <span className="font-bold">{from}</span> to{' '}
                   <span className="font-bold">{to}</span>
                 </div>
               ))}
