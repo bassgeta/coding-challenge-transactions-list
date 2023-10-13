@@ -1,9 +1,12 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { Account } from '@web3-onboard/core/dist/types';
-
-import { sendTransactionAction } from '../../store/actions';
+import {
+  clearSendTransactionStateAction,
+  sendTransactionAction,
+} from '../../store/actions';
+import { sendTransactionSelector } from '../../store/selectors';
 
 interface SendTransactionFormData {
   sender: string;
@@ -16,6 +19,7 @@ interface SendTransactionProps {
 }
 
 const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
+  const modalRef = useRef(null);
   const dispatch = useDispatch();
   const {
     handleSubmit,
@@ -30,7 +34,23 @@ const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
       amount: 1,
     },
   });
-  console.log('ajej', senderAccount);
+
+  const onClose = useCallback(() => {
+    dispatch(clearSendTransactionStateAction());
+  }, [dispatch]);
+
+  const { error, isLoading, transactionId } = useSelector(
+    sendTransactionSelector,
+  );
+
+  useEffect(() => {
+    if (transactionId !== null) {
+      console.log('wooo', transactionId);
+      // @ts-ignore
+      HSOverlay.close(modalRef.current);
+      onClose();
+    }
+  }, [transactionId, onClose]);
 
   const onSubmit = handleSubmit((data) => {
     dispatch(sendTransactionAction(data));
@@ -47,11 +67,18 @@ const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
       </button>
       <form onSubmit={onSubmit}>
         <div
+          ref={modalRef}
           id="hs-basic-modal"
           className="hs-overlay hidden w-full h-full fixed top-0 left-0 z-[60] overflow-x-hidden overflow-y-auto bg-black bg-opacity-60"
         >
           <div className="hs-overlay-open:opacity-100 hs-overlay-open:duration-500 opacity-100 transition-all w-full m-3 mx-auto flex flex-col h-full items-center justify-center">
-            <div className="bg-white border shadow-sm rounded-xl w-modal">
+            <div className="relative bg-white border shadow-sm rounded-xl w-modal">
+              {/* This should be a spinner, or indicate it a bit different, this is just for demo purposes */}
+              {isLoading && (
+                <div className="absolute z-10 bg-gray-50 w-full h-full opacity-80 flex flex-col h-full items-center justify-center">
+                  Loading...
+                </div>
+              )}
               <div className="flex justify-between items-center py-3 px-4 border-b">
                 <h3 className="font-bold text-gray-800 text-xl">
                   Send Transaction
@@ -116,9 +143,9 @@ const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
                   })}
                 />
                 {errors.recipient && (
-                  <span className="w-full mx-auto text-xs text-red-600 font-bold">
+                  <p className="w-full text-start mx-auto text-xs text-red-600 font-bold">
                     {errors.recipient.message}
-                  </span>
+                  </p>
                 )}
                 {/* We use ETH so we avoid JS rounding errors + it's better UX */}
                 <label
@@ -142,13 +169,15 @@ const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
                   })}
                 />
                 {errors.amount && (
-                  <span className="w-full mx-auto text-xs text-red-600 font-bold">
+                  <p className="w-full text-start mx-auto text-xs text-red-600 font-bold">
                     {errors.amount.message}
-                  </span>
+                  </p>
                 )}
               </div>
               <div className="flex justify-end items-center gap-x-2 py-3 px-4 border-t">
                 <button
+                  onClick={onClose}
+                  disabled={isLoading}
                   type="button"
                   className="hs-dropdown-toggle py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border font-medium bg-white text-gray-700 shadow-sm align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-blue-600 transition-all text-sm"
                   data-hs-overlay="#hs-basic-modal"
@@ -157,12 +186,17 @@ const SendTransaction: React.FC<SendTransactionProps> = ({ senderAccount }) => {
                 </button>
                 <button
                   type="submit"
-                  disabled={!isValid}
+                  disabled={!isValid || isLoading}
                   className="py-3 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-blue-500 text-white hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm"
                 >
                   Send
                 </button>
               </div>
+              {error !== null && (
+                <p className="w-full text-center mx-auto text-s text-red-600 font-bold">
+                  {error}
+                </p>
+              )}
             </div>
           </div>
         </div>

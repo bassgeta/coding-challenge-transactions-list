@@ -1,4 +1,4 @@
-import { takeEvery } from 'redux-saga/effects';
+import { put, takeEvery } from 'redux-saga/effects';
 import {
   Transaction,
   TransactionResponse,
@@ -8,12 +8,19 @@ import {
 } from 'ethers';
 
 import apolloClient from '../apollo/client';
-import { Actions } from '../types';
+import { Transaction as TransactionAPI } from '../types';
 import { GetAllTransactions, SaveTransaction } from '../queries';
-import { SendTransactionAction } from './interfaces';
+import { ActionType, SendTransactionAction } from './interfaces';
 import { convertETHToWei } from '../utils/currency';
+import {
+  sendTransactionErrorAction,
+  sendTransactionLoadingAction,
+  sendTransactionSuccessAction,
+} from './actions';
+import { FetchResult } from '@apollo/client';
 
 function* sendTransaction({ payload }: SendTransactionAction) {
+  yield put(sendTransactionLoadingAction(true));
   const { amount, recipient, sender } = payload;
 
   // this could have been passed along in a more elegant fashion,
@@ -51,16 +58,30 @@ function* sendTransaction({ payload }: SendTransactionAction) {
       },
     };
 
-    yield apolloClient.mutate({
-      mutation: SaveTransaction,
-      variables,
-      refetchQueries: [{ query: GetAllTransactions }],
-    });
+    const transactionResponse: FetchResult<TransactionAPI> =
+      yield apolloClient.mutate({
+        mutation: SaveTransaction,
+        variables,
+        refetchQueries: [{ query: GetAllTransactions }],
+      });
+    console.log('ma kaj bomo doili a', transactionResponse);
+
+    /*
+    if (transactionResponse.data) {
+      yield put(
+        sendTransactionSuccessAction({
+          transactionId: transactionResponse.data.hash,
+        }),
+      );
+    }
+    */
   } catch (error) {
     console.error('Error while creating transaction', error);
+    // It would be nicer to check the error type, but for the moment let's store a generic error message
+    yield put(sendTransactionErrorAction('Something went wrong, try again'));
   }
 }
 
 export function* rootSaga() {
-  yield takeEvery(Actions.SendTransaction, sendTransaction);
+  yield takeEvery(ActionType.SendTransaction, sendTransaction);
 }

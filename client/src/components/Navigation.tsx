@@ -33,7 +33,6 @@ const Navigation: React.FC = () => {
       setWallet(metamaskWallet);
     }
   }, []);
-  console.log('dwalet', wallet);
 
   return (
     <header className="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-ful text-sm py-4 bg-gray-800">
